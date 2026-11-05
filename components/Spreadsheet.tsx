@@ -47,17 +47,40 @@ export default function Spreadsheet() {
             <button className="btn">Retry save</button>
           )}
 
-          <button className="btn" onClick={} disabled={}>
-            ↶ Undo
-          </button>
+          <button className="btn">↶ Undo</button>
 
-          <button className="btn" onClick={} disabled={}>
-            ↷ Redo
-          </button>
+          <button className="btn">↷ Redo</button>
 
-          <button className="btn" onClick={}></button>
+          <button className="btn"></button>
         </div>
       </header>
+
+      {/* Toolbar */}
+      <nav className="toolbar">
+        <span className="tool-label">File</span>
+        <span className="tool-label">Edit</span>
+        <span className="tool-label">View</span>
+
+        <button className="tool-btn">↶</button>
+
+        <button className="tool-btn">↷</button>
+
+        <button className="tool-btn">Copy</button>
+
+        <button className="tool-btn">Paste</button>
+
+        <button className="tool-btn">✎ Edit cell</button>
+
+        <span
+          style={{
+            marginLeft: "auto",
+            fontSize: 11,
+            color: "var(--muted)",
+          }}
+        >
+          Keyboard-first spreadsheet
+        </span>
+      </nav>
     </main>
   );
 }
