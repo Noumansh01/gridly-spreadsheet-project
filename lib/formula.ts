@@ -1,6 +1,255 @@
-export function displayValue(raw: string, computed: string): string {
-  return raw.startsWith("=") ? computed : raw;
+import { parseAddress, address } from "./address";
+import type { CellMap } from "./type";
+
+type Token = {
+  type:
+    | "number"
+    | "cell"
+    | "op"
+    | "name"
+    | "colon"
+    | "comma"
+    | "lparen"
+    | "rparen";
+  value: string;
+};
+
+type Value = number | string | number[];
+
+type Node =
+  | { kind: "number"; value: number }
+  | { kind: "cell"; ref: string }
+  | { kind: "range"; from: string; to: string }
+  | { kind: "unary"; op: string; value: Node }
+  | { kind: "binary"; op: string; left: Node; right: Node }
+  | { kind: "call"; name: string; args: Node[] };
+
+function tokenize(source: string): Token[] {
+  const input = source.startsWith("=") ? source.slice(1) : source;
+
+  const tokens: Token[] = [];
+
+  const regex =
+    /\s*(?:(\d+(?:\.\d+)?)|([A-Z]+[1-9]\d*)|([A-Z]+)|([+\-*/])|(:)|(,)|(\()|(\)))/iy;
+
+  let position = 0;
+
+  while (position < input.length) {
+    regex.lastIndex = position;
+
+    const match = regex.exec(input);
+
+    if (!match) {
+      throw new Error("#ERROR!");
+    }
+
+    position = regex.lastIndex;
+
+    if (match[1]) {
+      tokens.push({ type: "number", value: match[1] });
+    } else if (match[2]) {
+      tokens.push({
+        type: "cell",
+        value: match[2].toUpperCase(),
+      });
+    } else if (match[3]) {
+      tokens.push({
+        type: "name",
+        value: match[3].toUpperCase(),
+      });
+    } else if (match[4]) {
+      tokens.push({ type: "op", value: match[4] });
+    } else if (match[5]) {
+      tokens.push({ type: "colon", value: ":" });
+    } else if (match[6]) {
+      tokens.push({ type: "comma", value: "," });
+    } else if (match[7]) {
+      tokens.push({ type: "lparen", value: "(" });
+    } else if (match[8]) {
+      tokens.push({ type: "rparen", value: ")" });
+    }
+  }
+
+  return tokens;
 }
+
+class Parser {
+  private index = 0;
+
+  constructor(private tokens: Token[]) {}
+
+  private peek() {
+    return this.tokens[this.index];
+  }
+
+  private take() {
+    return this.tokens[this.index++];
+  }
+
+  parse(): Node {
+    const result = this.expression();
+
+    if (this.index !== this.tokens.length) {
+      throw new Error("#ERROR!");
+    }
+
+    return result;
+  }
+
+  private expression(): Node {
+    let node = this.term();
+
+    while (
+      this.peek()?.type === "op" &&
+      ["+", "-"].includes(this.peek().value)
+    ) {
+      const operator = this.take().value;
+
+      node = {
+        kind: "binary",
+        op: operator,
+        left: node,
+        right: this.term(),
+      };
+    }
+
+    return node;
+  }
+
+  private term(): Node {
+    let node = this.factor();
+
+    while (
+      this.peek()?.type === "op" &&
+      ["*", "/"].includes(this.peek().value)
+    ) {
+      const operator = this.take().value;
+
+      node = {
+        kind: "binary",
+        op: operator,
+        left: node,
+        right: this.factor(),
+      };
+    }
+
+    return node;
+  }
+
+  private factor(): Node {
+    const token = this.peek();
+
+    if (!token) throw new Error("#ERROR!");
+
+    if (token.type === "op" && ["+", "-"].includes(token.value)) {
+      this.take();
+
+      return {
+        kind: "unary",
+        op: token.value,
+        value: this.factor(),
+      };
+    }
+
+    if (token.type === "number") {
+      this.take();
+
+      return {
+        kind: "number",
+        value: Number(token.value),
+      };
+    }
+
+    if (token.type === "cell") {
+      this.take();
+
+      if (this.peek()?.type === "colon") {
+        this.take();
+
+        const end = this.take();
+
+        if (!end || end.type !== "cell") {
+          throw new Error("#REF!");
+        }
+
+        return {
+          kind: "range",
+          from: token.value,
+          to: end.value,
+        };
+      }
+
+      return {
+        kind: "cell",
+        ref: token.value,
+      };
+    }
+
+    if (token.type === "name") {
+      this.take();
+
+      if (this.take()?.type !== "lparen") {
+        throw new Error("#NAME?");
+      }
+
+      const args: Node[] = [];
+
+      if (this.peek()?.type !== "rparen") {
+        args.push(this.expression());
+
+        while (this.peek()?.type === "comma") {
+          this.take();
+          args.push(this.expression());
+        }
+      }
+
+      if (this.take()?.type !== "rparen") {
+        throw new Error("#ERROR!");
+      }
+
+      return {
+        kind: "call",
+        name: token.value,
+        args,
+      };
+    }
+
+    if (token.type === "lparen") {
+      this.take();
+
+      const node = this.expression();
+
+      if (this.take()?.type !== "rparen") {
+        throw new Error("#ERROR!");
+      }
+
+      return node;
+    }
+
+    throw new Error("#ERROR!");
+  }
+}
+
+function numeric(value: Value): number {
+  if (Array.isArray(value)) {
+    throw new Error("#VALUE!");
+  }
+
+  if (typeof value === "string" && value.startsWith("#")) {
+    throw new Error(value);
+  }
+
+  if (value === "") return 0;
+
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) {
+    throw new Error("#VALUE!");
+  }
+
+  return number;
+}
+
 export function evaluateWorkbook(
   cells: CellMap,
   maxRows = 10000,
@@ -162,4 +411,8 @@ export function evaluateWorkbook(
   });
 
   return output;
+}
+
+export function displayValue(raw: string, computed: string): string {
+  return raw.startsWith("=") ? computed : raw;
 }
