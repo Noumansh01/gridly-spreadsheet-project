@@ -24,6 +24,7 @@ function initialSelection(): Selection {
 export default function Spreadsheet() {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("saved");
   const [editing, setEditing] = useState(false);
+  const [toast, setToast] = useState("");
   const [showNewSheet, setShowNewSheet] = useState(false);
   const [renaming, setRenaming] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
@@ -477,6 +478,17 @@ export default function Spreadsheet() {
           </div>
         </footer>
       </section>
+
+      <div className="hint">
+        Tip: Arrow keys to move · Shift + arrows to select · Enter to move down
+        · Double-click or type to edit · Ctrl/Cmd + C/V to copy and paste
+      </div>
+
+      {toast && (
+        <div className="toast" role="status">
+          {toast}
+        </div>
+      )}
     </main>
   );
 }
