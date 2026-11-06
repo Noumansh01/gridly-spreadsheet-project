@@ -141,3 +141,116 @@ button {
   font-size: 12px;
   padding: 0 8px;
 }
+.tool-btn:hover {
+  background: var(--bg);
+}
+
+.formula-wrap {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 22px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.name-box {
+  width: 74px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  padding: 0 9px;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.fx {
+  color: var(--muted);
+  font-family: Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+}
+
+.formula-input {
+  height: 32px;
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  padding: 0 10px;
+  font-size: 12px;
+  outline: none;
+}
+
+.formula-input:focus,
+.name-box:focus {
+  border-color: var(--green);
+}
+
+.grid-wrap {
+  margin: 17px 22px 0;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.grid-scroll {
+  overflow: auto;
+  position: relative;
+  flex: 1;
+  min-height: 400px;
+  outline: none;
+}
+
+.sheet-grid {
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  width: max-content;
+  min-width: 100%;
+  font-size: 12px;
+}
+
+.sheet-grid th,
+.sheet-grid td {
+  height: 31px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 0 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sheet-grid thead th {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--header);
+  font-weight: 650;
+  color: var(--muted);
+  text-align: center;
+  height: 34px;
+}
+
+.sheet-grid .row-head {
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  background: var(--header);
+  width: 48px;
+  min-width: 48px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 0;
+}
