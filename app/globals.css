@@ -67,6 +67,7 @@ button {
   padding: 0 22px;
   gap: 16px;
 }
+
 .brand {
   display: flex;
   align-items: center;
@@ -106,6 +107,22 @@ button {
   align-items: center;
   gap: 7px;
 }
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #20a66a;
+}
+
+.dot.saving {
+  background: #d59a27;
+}
+
+.dot.failed {
+  background: var(--danger);
+}
+
 .btn {
   border: 1px solid var(--line);
   background: var(--panel);
@@ -115,6 +132,22 @@ button {
   font-size: 12px;
   font-weight: 600;
 }
+
+.btn:hover {
+  background: var(--bg);
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn.primary {
+  background: #168653;
+  color: white;
+  border-color: #168653;
+}
+
 .toolbar {
   display: flex;
   align-items: center;
@@ -141,6 +174,7 @@ button {
   font-size: 12px;
   padding: 0 8px;
 }
+
 .tool-btn:hover {
   background: var(--bg);
 }
@@ -253,4 +287,180 @@ button {
   color: var(--muted);
   font-size: 11px;
   padding: 0;
+}
+
+.sheet-grid thead .corner {
+  left: 0;
+  z-index: 8;
+}
+
+.sheet-grid .frozen {
+  position: sticky;
+  left: 48px;
+  z-index: 3;
+  background: var(--panel);
+  box-shadow: 2px 0 3px rgba(15, 30, 20, 0.035);
+}
+
+.sheet-grid thead .frozen {
+  z-index: 7;
+  background: var(--header);
+}
+
+.sheet-grid td {
+  background: var(--panel);
+  color: var(--text);
+  position: relative;
+}
+
+.sheet-grid td.number {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.sheet-grid td.subtotal {
+  background: var(--green-soft);
+  font-weight: 650;
+}
+
+.sheet-grid td.selected {
+  background: var(--green-soft);
+}
+
+.sheet-grid td.active {
+  outline: 2px solid var(--green);
+  outline-offset: -2px;
+  z-index: 2;
+}
+
+.sheet-grid td.computed {
+  color: var(--green);
+}
+
+.sheet-grid td.broken {
+  color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 8%, var(--panel));
+}
+
+.cell-editor {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  outline: 0;
+  background: var(--panel);
+  color: var(--text);
+  padding: 0 8px;
+  font-size: 12px;
+}
+
+.resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 9;
+}
+
+.sheet-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 43px;
+  padding: 0 14px;
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.tab {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 8px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+.tab.active {
+  background: var(--green-soft);
+  color: var(--green);
+  font-weight: 700;
+}
+
+.statusbar {
+  display: flex;
+  gap: 18px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.statusbar strong {
+  color: var(--text);
+  font-weight: 650;
+}
+
+.hint {
+  color: var(--muted);
+  font-size: 11px;
+  padding: 10px 22px 18px;
+}
+
+.toast {
+  position: fixed;
+  right: 22px;
+  bottom: 65px;
+  background: var(--text);
+  color: var(--panel);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  z-index: 20;
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    padding: 0 12px;
+  }
+
+  .toolbar {
+    padding: 8px 12px;
+    overflow: auto;
+  }
+
+  .formula-wrap {
+    padding: 8px 12px;
+  }
+
+  .grid-wrap {
+    margin: 10px 8px 0;
+  }
+
+  .hint {
+    padding: 8px 12px;
+  }
+
+  .save-state {
+    display: none;
+  }
+
+  .statusbar {
+    gap: 8px;
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }
